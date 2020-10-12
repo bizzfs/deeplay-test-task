@@ -1,0 +1,40 @@
+@startuml
+database "RethinkDb" as db
+
+rectangle "Persistence layer" {
+    rectangle "MessagesRepository" as mr
+    rectangle "PlayersRepository" as pr
+    rectangle "TablesRepository" as tr
+}
+
+rectangle "Service layer" {
+    rectangle "ChatService" as cs
+    rectangle "EtlService" as es
+    rectangle "MessagesService" as ms
+    rectangle "PlayersService" as ps
+    rectangle "TablesService" as ts
+}
+
+rectangle "Transport layer" {
+    rectangle "WsHub" as wshub
+}
+
+rectangle Events as e
+rectangle Clients as c
+wshub --> c
+c --> cs
+mr <--> db
+pr <--> db
+tr <--> db
+
+mr <--> ms
+pr <--> ps
+tr <--> ts
+
+es --> e
+e --> cs
+cs <--> ms
+cs <--> ts
+cs <--> ps
+
+@enduml
