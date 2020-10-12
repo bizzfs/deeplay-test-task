@@ -1,13 +1,8 @@
 import { Observable } from 'rxjs';
-import { MessagesFeedValue, TableModel } from '../../persistence';
-import { FeedSubscription } from '../types';
+
+import { ChatClient } from './chat-client';
 
 export interface ChatService {
-  /**
-   * Messages feed stream
-   */
-  messagesFeed$: Observable<MessagesFeedValue>;
-
   /**
    * Start the service
    */
@@ -25,22 +20,8 @@ export interface ChatService {
   stop(): void;
 
   /**
-   * Get table by a given id with the related messages
-   * @param tableId table id
-   * @return Observable<TableModel>
+   * Register client to a service
+   * @param client
    */
-  geTabletByIdWithMessages(tableId: string): Observable<TableModel>;
-
-  /**
-   * Get all tables
-   * @return Observable<TableModel[]>
-   */
-  getAllTables(): Observable<TableModel[]>;
-
-  /**
-   * Subscribe to a messages feed by a given table id
-   * @param tableId table id
-   * @return FeedSubscription
-   */
-  subscribeToTableMessages(tableId: string): FeedSubscription;
+  registerClient(client: ChatClient): void;
 }

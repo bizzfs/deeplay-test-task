@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 
 import { MessageModel, MessagesFeedValue } from '../../persistence';
-import { FeedSubscription } from '../types';
+import { UnsubscribeFunc } from '../types';
 
 export interface MessagesService {
   /**
@@ -19,9 +19,9 @@ export interface MessagesService {
   /**
    * Subscribe to the messages related to the table by a given table id
    * @param tableId table id
-   * @return FeedSubscription
+   * @return UnsubscribeFunc
    */
-  subscribe(tableId: string): FeedSubscription;
+  subscribe(tableId: string): UnsubscribeFunc;
 
   /**
    * Get messages related to the table by a given table id

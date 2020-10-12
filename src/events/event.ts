@@ -1,6 +1,5 @@
 export enum EventTypes {
   MESSAGE_SEND = 'message.send',
-  PLAYER_ONLINE = 'player.online',
 }
 
 export class MessageSend {
@@ -15,16 +14,4 @@ export class MessageSend {
   ) {}
 }
 
-// Not used at the moment
-export class PlayerOnline {
-  public readonly type = EventTypes.PLAYER_ONLINE;
-  constructor(
-    public readonly data: {
-      timestamp: number | null;
-      playerId: string | null;
-      tableId: string | null;
-    }
-  ) {}
-}
-
-export type Event = MessageSend | PlayerOnline;
+export type Event = MessageSend;

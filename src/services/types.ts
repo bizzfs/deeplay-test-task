@@ -1,3 +1,1 @@
-export interface FeedSubscription {
-  close(): void;
-}
+export type UnsubscribeFunc = () => void;

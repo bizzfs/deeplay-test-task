@@ -1,7 +1,7 @@
 import { Inject } from 'injection-js';
 import { Observable } from 'rxjs';
 
-import { FeedSubscription } from '../types';
+import { UnsubscribeFunc } from '../types';
 import { MessageModel, MessagesRepository } from '../../persistence';
 import { MESSAGES_REPOSITORY_TOKEN } from '../../injection-tokens';
 import { MessagesService } from './messages-service';
@@ -19,8 +19,7 @@ export class MessagesServiceImpl implements MessagesService {
     return this.messagesRepository.getByTableId(tableId);
   }
 
-  public subscribe(tableId: string): FeedSubscription {
-    const unsubscribeFunc = this.messagesRepository.subscribe(tableId);
-    return { close: unsubscribeFunc };
+  public subscribe(tableId: string): UnsubscribeFunc {
+    return this.messagesRepository.subscribe(tableId);
   }
 }

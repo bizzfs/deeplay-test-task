@@ -11,4 +11,4 @@ export { PlayersServiceImpl } from './players-service/players-service-impl';
 export { TablesService } from './tables-service/tables-service';
 export { TablesServiceImpl } from './tables-service/tables-service-impl';
 
-export { FeedSubscription } from './types';
+export { UnsubscribeFunc } from './types';
