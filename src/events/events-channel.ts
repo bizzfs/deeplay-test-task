@@ -1,18 +1,18 @@
 import { Observable } from 'rxjs';
 
-import { Event } from './event';
+import { EventsUnion } from './eventsUnion';
 
 export interface EventsChannel {
   /**
    * Dispatch an event
    * @param event
    */
-  dispatch(event: Event): void;
+  dispatch(event: EventsUnion): void;
 
   /**
    * Get the events stream
    */
-  getStream(): Observable<Event>;
+  getStream(): Observable<EventsUnion>;
 
 
 

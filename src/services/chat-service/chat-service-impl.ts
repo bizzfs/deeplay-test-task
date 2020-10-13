@@ -12,7 +12,7 @@ import {
   PLAYERS_SERVICE_TOKEN,
   TABLES_SERVICE_TOKEN,
 } from '../../injection-tokens';
-import { Event, EventsChannel, EventTypes, MessageSend } from '../../events';
+import { EventsUnion, EventsChannel, EventTypes, MessageSend } from '../../events';
 import { EtlService, MessagesService, PlayersService, TablesService } from '..';
 import { MessageModel, MessagesFeedValue, TableModel } from '../../persistence';
 
@@ -192,7 +192,7 @@ export class ChatServiceImpl implements ChatService {
 
   // -------------------------------------------etl related-------------------------------------------------------------
 
-  private handleEtlEvent(event: Event): void {
+  private handleEtlEvent(event: EventsUnion): void {
     switch (event.type) {
       case EventTypes.MESSAGE_SEND:
         return this.handleEtlMessageSendEvent(event);

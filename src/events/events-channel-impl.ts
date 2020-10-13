@@ -1,15 +1,15 @@
 import { Observable, Subject } from 'rxjs';
 
-import { Event } from './event';
+import { EventsUnion } from './eventsUnion';
 import { EventsChannel } from './events-channel';
 
 export class EventsChannelImpl implements EventsChannel {
-  private readonly eventsSubj$ = new Subject<Event>();
+  private readonly eventsSubj$ = new Subject<EventsUnion>();
 
-  public dispatch(event: Event): void {
+  public dispatch(event: EventsUnion): void {
     this.eventsSubj$.next(event);
   }
-  public getStream(): Observable<Event> {
+  public getStream(): Observable<EventsUnion> {
     return this.eventsSubj$.asObservable();
   }
 }
