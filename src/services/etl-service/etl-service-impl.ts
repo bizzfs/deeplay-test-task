@@ -8,6 +8,7 @@ import { EventsUnion, EventsChannel, MessageSend } from '../../events';
 import { EVENTS_CHANNEL_TOKEN, PLAYERS_SERVICE_TOKEN, TABLES_SERVICE_TOKEN } from '../../injection-tokens';
 import { PlayersService, TablesService } from '..';
 import { PlayerTakesSeat } from '../../events/eventsUnion';
+import { withErrorHandling } from '../utils';
 
 interface PLayersMap {
   [playerId: string]: { tableId: string; seat: number };
@@ -29,8 +30,8 @@ export class EtlServiceImpl implements EtlService {
   public startWithCancel(freq: number, cancel$: Observable<void>): void {
     this.stop();
 
-    this.loadPlayerAndTableIds()
-      .pipe(
+    withErrorHandling(
+      this.loadPlayerAndTableIds().pipe(
         mergeMap((pLayersMap) =>
           interval(freq).pipe(
             startWith(-1),
@@ -39,7 +40,7 @@ export class EtlServiceImpl implements EtlService {
           )
         )
       )
-      .subscribe((event) => this.eventsChannel.dispatch(event));
+    ).subscribe((event) => this.eventsChannel.dispatch(event));
   }
 
   public stop(): void {
