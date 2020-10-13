@@ -9,6 +9,7 @@ import {
   JSON_MAPPER_SERVICE_TOKEN,
   MESSAGES_REPOSITORY_TOKEN,
   MESSAGES_SERVICE_TOKEN,
+  PLAYER_TABLE_RELATIONS_REPOSITORY_TOKEN,
   PLAYERS_REPOSITORY_TOKEN,
   PLAYERS_SERVICE_TOKEN,
   TABLES_REPOSITORY_TOKEN,
@@ -25,7 +26,13 @@ import {
   TablesServiceImpl,
 } from './services';
 
-import { DbManagerImpl, MessagesRepositoryImpl, PlayersRepository, TablesRepository } from './persistence';
+import {
+  DbManagerImpl,
+  MessagesRepositoryImpl,
+  PlayersRepository,
+  PlayerTableRelationsRepository,
+  TablesRepository,
+} from './persistence';
 import { EventsChannelImpl } from './events';
 import { WsHubImpl } from './ws';
 
@@ -36,6 +43,7 @@ export const providers: Provider[] = [
   { provide: MESSAGES_REPOSITORY_TOKEN, useClass: MessagesRepositoryImpl },
   { provide: TABLES_REPOSITORY_TOKEN, useClass: TablesRepository },
   { provide: PLAYERS_REPOSITORY_TOKEN, useClass: PlayersRepository },
+  { provide: PLAYER_TABLE_RELATIONS_REPOSITORY_TOKEN, useClass: PlayerTableRelationsRepository },
   { provide: EVENTS_CHANNEL_TOKEN, useClass: EventsChannelImpl },
   { provide: MESSAGES_SERVICE_TOKEN, useClass: MessagesServiceImpl },
   { provide: PLAYERS_SERVICE_TOKEN, useClass: PlayersServiceImpl },

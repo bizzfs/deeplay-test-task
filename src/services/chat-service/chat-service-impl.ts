@@ -1,5 +1,5 @@
 import { Inject } from 'injection-js';
-import { forkJoin, merge, Observable, of, Subject, throwError } from 'rxjs';
+import { forkJoin, merge, Observable, of, Subject } from 'rxjs';
 import { map, mergeMap, takeUntil, tap } from 'rxjs/operators';
 
 import { ChatClient } from './chat-client';
@@ -12,7 +12,7 @@ import {
   PLAYERS_SERVICE_TOKEN,
   TABLES_SERVICE_TOKEN,
 } from '../../injection-tokens';
-import { EventsChannel, EventsUnion, EventTypes, MessageSend } from '../../events';
+import { EventsChannel, Events, EventTypes, MessageSend, PlayerTakesSeat, Reset } from '../../events';
 import { EtlService, MessagesService, PlayersService, TablesService } from '..';
 import { MessageModel, MessagesFeedValue, TableModel } from '../../persistence';
 import { mapsToVoid, withErrorHandling } from '../utils';
@@ -110,7 +110,7 @@ export class ChatServiceImpl implements ChatService {
   }
 
   private getTableWithMessages(tableId: string): Observable<TableModel> {
-    return forkJoin([this.tablesService.getById(tableId), this.messagesService.getByTableId(tableId)]).pipe(
+    return forkJoin([this.tablesService.getByIdWithPlayers(tableId), this.messagesService.getByTableId(tableId)]).pipe(
       map(([table, messages]) => {
         table.messages = messages;
         return table;
@@ -192,8 +192,7 @@ export class ChatServiceImpl implements ChatService {
 
   // -------------------------------------------feed related------------------------------------------------------------
   private handleFeedValue(value: MessagesFeedValue): Observable<void> {
-    if (!value.message || !value.message.tableId) throw new Error(`invalid feed value: ${JSON.stringify(value)}`);
-    if (this.tableSubsMap[value.message.tableId]) {
+    if (value.message && value.message.tableId && this.tableSubsMap[value.message.tableId]) {
       this.tableSubsMap[value.message.tableId].clients.forEach((client) =>
         client.sendData(value.message, !value.error, value.error ? [value.error.message] : [])
       );
@@ -203,12 +202,14 @@ export class ChatServiceImpl implements ChatService {
 
   // -------------------------------------------etl related-------------------------------------------------------------
 
-  private handleEtlEvent(event: EventsUnion): Observable<void> {
+  private handleEtlEvent(event: Events): Observable<void> {
     switch (event.type) {
       case EventTypes.MESSAGE_SEND:
         return this.handleEtlMessageSendEvent(event);
       case EventTypes.PLAYER_TAKES_SEAT:
-        return of();
+        return this.handleEtlPlayerTakesSeatEvent(event);
+      case EventTypes.RESET:
+        return this.handleEtlResetEvent(event);
       default:
         throw new Error('not handled event type');
     }
@@ -226,5 +227,13 @@ export class ChatServiceImpl implements ChatService {
     model.tableId = tableId;
     model.timestamp = timestamp;
     return model;
+  }
+
+  private handleEtlPlayerTakesSeatEvent(event: PlayerTakesSeat): Observable<void> {
+    return mapsToVoid(this.playersService.storeRelation(event.data.playerId, event.data.tableId));
+  }
+
+  private handleEtlResetEvent(event: Reset): Observable<void> {
+    return this.playersService.clearRelations();
   }
 }

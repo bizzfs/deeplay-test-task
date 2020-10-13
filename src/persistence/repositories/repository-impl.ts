@@ -1,7 +1,8 @@
 import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { r, RDatum, WriteResult, R } from 'rethinkdb-ts';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import { r, RDatum, WriteResult } from 'rethinkdb-ts';
 
+import { cleanNullProps } from '../../services/utils';
 import { JsonMapperService } from '../../services';
 import { Repository } from './repository';
 
@@ -44,6 +45,25 @@ export class RepositoryImpl<T extends { id: string | null }> implements Reposito
     return res.generated_keys;
   }
 
+  public update(model: T): Observable<T> {
+    if (model.id) throw new Error('no id was provided');
+    return from(r.table(this.table).insert(this.jsonMapperService.serializeObject(model)).run()).pipe(
+      map((res) => {
+        return model;
+      })
+    );
+  }
+
+  public updateMultiple(models: T[]): Observable<T[]> {
+    if (models.map((item) => item.id).filter((id) => id).length !== models.length)
+      throw new Error('some ids were not provided');
+    return from(r.table(this.table).insert(this.jsonMapperService.serializeArray(models)).run()).pipe(
+      map((res) => {
+        return models;
+      })
+    );
+  }
+
   public getById(id: string): Observable<T> {
     return from(r.table(this.table).filter(r.row('id').eq(id)).run()).pipe(
       map((res) => this.jsonMapperService.deserializeObject(this.parseObj(res), this.modelClass))
@@ -79,6 +99,16 @@ export class RepositoryImpl<T extends { id: string | null }> implements Reposito
     return from(r.table(this.table).count().run());
   }
 
+  public delete(model: T): Observable<void> {
+    return from(
+      r
+        .table(this.table)
+        .filter(cleanNullProps(this.jsonMapperService.serializeObject(model)))
+        .delete()
+        .run()
+    ).pipe(map(() => {}));
+  }
+
   public deleteById(id: string): Observable<void> {
     return from(r.table(this.table).filter(r.row('id').eq(id)).delete().run()).pipe(map(() => {}));
   }
@@ -95,5 +125,38 @@ export class RepositoryImpl<T extends { id: string | null }> implements Reposito
 
   public deleteAll(): Observable<void> {
     return from(r.table(this.table).delete().run()).pipe(map(() => {}));
+  }
+
+  public find(model: T): Observable<T> {
+    return from(
+      r
+        .table(this.table)
+        .filter(cleanNullProps(this.jsonMapperService.serializeObject(model)))
+        .run()
+    ).pipe(
+      map((res) => {
+        if (res.length === 0) throw new Error('not found');
+        return this.jsonMapperService.deserializeObject(res[0], this.modelClass);
+      })
+    );
+  }
+
+  public findMany(model: T): Observable<T[]> {
+    return from(
+      r
+        .table(this.table)
+        .filter(cleanNullProps(this.jsonMapperService.serializeObject(model)))
+        .run()
+    ).pipe(map((res) => this.jsonMapperService.deserializeArray(res, this.modelClass)));
+  }
+
+  public updateOrCreate(model: T): Observable<T> {
+    return this.find(model).pipe(
+      mergeMap((found) => {
+        Object.assign(found, model);
+        return this.update(found);
+      }),
+      catchError(() => this.create(model))
+    );
   }
 }

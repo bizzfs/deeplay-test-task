@@ -4,10 +4,9 @@ import { map, mergeMap, startWith, takeUntil } from 'rxjs/operators';
 import crypto from 'crypto';
 
 import { EtlService } from './etl-service';
-import { EventsUnion, EventsChannel, MessageSend } from '../../events';
+import { Events, EventsChannel, MessageSend, PlayerTakesSeat, Reset } from '../../events';
 import { EVENTS_CHANNEL_TOKEN, PLAYERS_SERVICE_TOKEN, TABLES_SERVICE_TOKEN } from '../../injection-tokens';
 import { PlayersService, TablesService } from '..';
-import { PlayerTakesSeat } from '../../events/eventsUnion';
 import { withErrorHandling } from '../utils';
 
 interface PLayersMap {
@@ -45,6 +44,7 @@ export class EtlServiceImpl implements EtlService {
 
   public stop(): void {
     this.stopSubj$.next();
+    this.eventsChannel.dispatch(new Reset());
   }
 
   private loadPlayerAndTableIds(): Observable<PLayersMap> {
@@ -77,7 +77,7 @@ export class EtlServiceImpl implements EtlService {
     }, {} as PLayersMap);
   }
 
-  private generateMessageSendEvent(pLayersMap: PLayersMap): EventsUnion {
+  private generateMessageSendEvent(pLayersMap: PLayersMap): Events {
     const playerIds = Object.keys(pLayersMap);
     const playerId = playerIds[Math.floor(Math.random() * playerIds.length)];
     return new MessageSend({

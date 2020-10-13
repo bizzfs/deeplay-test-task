@@ -1,16 +1,17 @@
 export enum EventTypes {
   MESSAGE_SEND = 'message.send',
   PLAYER_TAKES_SEAT = 'player.take_seat',
+  RESET = 'reset',
 }
 
 export class MessageSend {
   public readonly type = EventTypes.MESSAGE_SEND;
   constructor(
     public readonly data: {
-      message: string | null;
-      playerId: string | null;
-      tableId: string | null;
-      timestamp: number | null;
+      message: string;
+      playerId: string;
+      tableId: string;
+      timestamp: number;
     }
   ) {}
 }
@@ -20,11 +21,15 @@ export class PlayerTakesSeat {
   constructor(
     public readonly data: {
       seat: number;
-      playerId: string | null;
-      tableId: string | null;
-      timestamp: number | null;
+      playerId: string;
+      tableId: string;
+      timestamp: number;
     }
   ) {}
 }
 
-export type EventsUnion = MessageSend | PlayerTakesSeat;
+export class Reset {
+  public readonly type = EventTypes.RESET;
+}
+
+export type Events = MessageSend | PlayerTakesSeat | Reset;

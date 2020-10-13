@@ -12,7 +12,7 @@ export interface MessagesService {
   /**
    * Create message
    * @param model message model
-   * @return MessageModel
+   * @return Observable<MessageModel>
    */
   create(model: MessageModel): Observable<MessageModel>;
 
@@ -26,7 +26,7 @@ export interface MessagesService {
   /**
    * Get messages related to the table by a given table id
    * @param tableId
-   * @return Observable<MessageModel[]
+   * @return  Observable<MessageModel[]>
    */
   getByTableId(tableId: string): Observable<MessageModel[]>;
 }

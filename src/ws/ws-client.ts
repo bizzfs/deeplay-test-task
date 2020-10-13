@@ -1,8 +1,9 @@
 import WebSocket from 'ws';
 
-import { ChatClient } from '../services/chat-service/chat-client';
 import { ActionsUnion } from '../services/chat-service/chat-client-actions';
+import { ChatClient } from '../services/chat-service/chat-client';
 import { ChatClientActions } from '../services/chat-service';
+import { cleanNullProps } from '../services/utils';
 
 export class WsClient implements ChatClient {
   private dispatchFunc = (action: ActionsUnion) => {};

@@ -1,5 +1,6 @@
 import { Inject } from 'injection-js';
 import { from, Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { r, RCursor } from 'rethinkdb-ts';
 
 import { JSON_MAPPER_SERVICE_TOKEN } from '../../../injection-tokens';
@@ -38,7 +39,9 @@ export class MessagesRepositoryImpl extends RepositoryImpl<MessageModel> impleme
   }
 
   public getByTableId(tableId: string): Observable<MessageModel[]> {
-    return from(r.table(this.table).filter(r.row('table_id').eq(tableId)).run());
+    return from(r.table(this.table).getAll(tableId, { index: 'table_id' }).run()).pipe(
+      map((res) => this.jsonMapperService.deserializeArray(res, this.modelClass))
+    );
   }
 
   private parseFeedValue<E extends Error>(value: any, err: E | undefined): MessagesFeedValue {

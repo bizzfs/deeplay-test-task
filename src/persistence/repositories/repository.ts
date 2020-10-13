@@ -2,18 +2,32 @@ import { Observable } from 'rxjs';
 
 export interface Repository<T extends { id: string | null }> {
   /**
-   * Insert single entities
+   * Save single entity
    * @param model
    * @return Observable<T>
    */
   create(model: T): Observable<T>;
 
   /**
-   * Insert multiple entities
+   * Save multiple entities
    * @param models
    * @return Observable<T[]>
    */
   createMultiple(models: T[]): Observable<T[]>;
+
+  /**
+   * Update single entity
+   * @param model
+   * @return Observable<T>
+   */
+  update(model: T): Observable<T>;
+
+  /**
+   * Update multiple entities
+   * @param models
+   * @return Observable<T[]>
+   */
+  updateMultiple(models: T[]): Observable<T[]>
 
   /**
    * Get entities by id
@@ -42,6 +56,12 @@ export interface Repository<T extends { id: string | null }> {
   countAll(): Observable<number>;
 
   /**
+   * Delete by nonnull fields
+   * @param model
+   */
+  delete(model: T): Observable<void>;
+
+  /**
    * Delete entity by a given id
    * @param id
    * @return Observable<void>
@@ -60,4 +80,22 @@ export interface Repository<T extends { id: string | null }> {
    * @return Observable<void>
    */
   deleteAll(): Observable<void>;
+
+  /**
+   * Find single entity by a non null fields
+   * @param model
+   */
+  find(model: T): Observable<T>;
+
+  /**
+   * Find entities by a non null fields
+   * @param model
+   */
+  findMany(model: T): Observable<T[]>;
+
+  /**
+   * Update or create entity
+   * @param model
+   */
+  updateOrCreate(model: T): Observable<T>;
 }

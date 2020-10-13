@@ -1,7 +1,14 @@
 import { InjectionToken } from 'injection-js';
 
 import { Env } from '../env';
-import { DbManager, MessagesRepository, PlayerModel, Repository, TableModel } from '../persistence';
+import {
+  DbManager,
+  MessagesRepository,
+  PlayerModel,
+  PlayerTableRelationModel,
+  Repository,
+  TableModel,
+} from '../persistence';
 import { EtlService, JsonMapperService, MessagesService, PlayersService, TablesService } from '../services';
 import { EventsChannel } from '../events';
 import { WsHub } from '../ws';
@@ -10,6 +17,9 @@ export const ENV_TOKEN = new InjectionToken<Env>('EnvToken');
 export const DB_MANAGER_TOKEN = new InjectionToken<DbManager>('ConnectionManagerToken');
 export const MESSAGES_REPOSITORY_TOKEN = new InjectionToken<MessagesRepository>('MessagesRepositoryToken');
 export const PLAYERS_REPOSITORY_TOKEN = new InjectionToken<Repository<PlayerModel>>('PlayersRepositoryToken');
+export const PLAYER_TABLE_RELATIONS_REPOSITORY_TOKEN = new InjectionToken<Repository<PlayerTableRelationModel>>(
+  'PlayersRepositoryToken'
+);
 export const TABLES_REPOSITORY_TOKEN = new InjectionToken<Repository<TableModel>>('TablesRepositoryToken');
 export const EVENTS_CHANNEL_TOKEN = new InjectionToken<EventsChannel>('EventsChannelToken');
 export const JSON_MAPPER_SERVICE_TOKEN = new InjectionToken<JsonMapperService>('JsonMapperServiceInjectionToken');
