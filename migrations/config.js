@@ -1,9 +1,9 @@
 module.exports = {
-    db: "test",
+    db: process.env.DB_NAME,
     driver: "rethinkdbdash",
     pool: true,
     servers: [
-        { host: "db", port: 28015 },
+        { host: process.env.DB_HOST , port: +process.env.DB_PORT },
     ],
     ssl: false
-}
+};
